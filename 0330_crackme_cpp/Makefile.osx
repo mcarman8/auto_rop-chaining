@@ -1,0 +1,8 @@
+SRCS = $(wildcard *.cpp)
+
+all: $(SRCS:.cpp=)
+
+.cpp:
+	g++ -fno-rtti -fno-exceptions $< -o osx/$@
+clean:
+	-rm `find ./osx -type f -executable`

@@ -1,0 +1,8 @@
+SRCS = $(wildcard *.cpp)
+
+all: $(SRCS:.cpp=)
+
+.cpp:
+	g++ -fno-rtti -fno-exceptions $< -o linux_x64/$@
+clean:
+	-rm `find ./linux_x64 -type f -executable`

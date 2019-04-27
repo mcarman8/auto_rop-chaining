@@ -1,6 +1,12 @@
 import angr
 import monkeyhex
-proj = angr.Project('/bin/ssh')
-block = proj.factory.block(proj.entry) #Get the block at the entry point
-block.pp() #Pretty Print the block
-print(block.instruction_addrs)
+import sys
+proj = angr.Project('./0330_crackme_cpp/linux_x64/crackme_101')
+cfg = proj.analyses.CFGFast()
+entry_func = cfg.kb.functions[proj.entry]
+items = proj.kb.functions.items()
+for item in items:
+    sys.stdout = open("./functions/func_"+str(item[0]),"w+")
+    block = proj.factory.block(item[0])
+    block.pp()
+    print(block.instruction_addrs)
