@@ -1,10 +1,14 @@
+# A tool that finds all possible gadgets in a binary
+# Matthew Chorney and Mark Carman
+# 04/28/19
+
 import angr
 import monkeyhex
 import sys
 from StringIO import StringIO
 import argparse
 
-def create_rops(proj,instruction_addrs,all_rops_file):
+def create_gadgets(proj,instruction_addrs,all_gadgets_file):
     for i in range (1,12):
         old_stdout = sys.stdout
         result = StringIO()
@@ -14,8 +18,8 @@ def create_rops(proj,instruction_addrs,all_rops_file):
         sys.stdout = old_stdout
         result_string = result.getvalue()
         if "ret" in result_string:
-            all_rops_file.write(result_string)
-            all_rops_file.write("\n--------------------------------------------------------------------------\n")
+            all_gadgets_file.write(result_string)
+            all_gadgets_file.write("\n--------------------------------------------------------------------------\n")
 
 
 parser = argparse.ArgumentParser()
@@ -25,7 +29,7 @@ proj = angr.Project(args.file)
 cfg = proj.analyses.CFGFast()
 entry_func = cfg.kb.functions[proj.entry]
 items = proj.kb.functions.items()
-all_rops_file = open("./all_rops.txt","w+")
+all_gadgets_file = open("./all_gadgets.txt","w+")
 for item in items:
     block = proj.factory.block(item[0])
     old_stdout = sys.stdout
@@ -35,10 +39,4 @@ for item in items:
     sys.stdout = old_stdout
     result_string = result.getvalue()
     if "ret" in result_string:
-        create_rops(proj,block.instruction_addrs,all_rops_file)
-
-#for item in items:
-#    sys.stdout = open("./functions/func_"+str(item[0]),"w+")
-#    block = proj.factory.block(item[0])
-#    block.pp()
-#    print(block.instruction_addrs)
+        create_gadgets(proj,block.instruction_addrs,all_gadgets_file)
